@@ -17,7 +17,7 @@ class Article(db.Model):
     content = db.Column(db.String)
     preview = db.Column(db.String)
     minutes_to_read = db.Column(db.Integer)
-    is_member_only = db.Column(db.Boolean, default=False)
+    is_member_only = db.Column(db.Boolean, default=False)  # Members-only flag
     date = db.Column(db.DateTime, server_default=db.func.now())
 
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
@@ -36,11 +36,11 @@ class User(db.Model):
     def __repr__(self):
         return f'User {self.username}, ID {self.id}'
 
+# Marshmallow Schemas
 class UserSchema(Schema):
     id = fields.Int()
     username = fields.String()
-
-    articles = fields.List(fields.Nested(lambda: ArticlesSchema(exclude=("user",))))
+    articles = fields.List(fields.Nested(lambda: ArticleSchema(exclude=("user",))))
 
 class ArticleSchema(Schema):
     id = fields.Int()
@@ -49,7 +49,7 @@ class ArticleSchema(Schema):
     content = fields.String()
     preview = fields.String()
     minutes_to_read = fields.Int()
-    is_member_only = fields.Boolean()
+    is_member_only = fields.Boolean()  # Ensure it’s included in serialization
     date = fields.DateTime()
 
     user = fields.Nested(UserSchema(exclude=("articles",)))
